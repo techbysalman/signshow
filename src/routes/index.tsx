@@ -1,311 +1,806 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  websiteImages,
-  topCarouselImages,
-  bottomCarouselImages,
-  selectedWorkImages,
-} from "@/config/images";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
+  ArrowUpRight,
+  Clapperboard,
+  Code2,
+  Fingerprint,
+  Gauge,
+  Instagram,
+  Megaphone,
+  Menu,
+  Shapes,
+  Users,
+  X,
+} from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+
+const logoAsset = { url: "/assets/branding/signshow-logo.png" };
+const taglineAsset = { url: "/assets/branding/tagline-cropped.png" };
+const mobileTaglineAsset = { url: "/assets/branding/mobile-tagline.png" };
+
+const dialogueLogo = { url: "/assets/clients/dialogue.jpg" };
+const talenmarkLogo = { url: "/assets/clients/talenmark.jpg" };
+const copperKitchenLogo = { url: "/assets/clients/copper-kitchen.jpg" };
+const diyaLogo = { url: "/assets/clients/diya.jpg" };
+const licLogo = { url: "/assets/clients/lic.png" };
+const pittappillilLogo = { url: "/assets/clients/pittappillil.jpg" };
+const myGLogo = { url: "/assets/clients/myg.png" };
+const nestoLogo = { url: "/assets/clients/nesto.png" };
+const rivershoreLogo = { url: "/assets/clients/rivershore.png" };
+
+const majorWork01 = { url: "/assets/works/work-01.jpeg" };
+const majorWork02 = { url: "/assets/works/work-02.png" };
+const majorWork03 = { url: "/assets/works/work-03.png" };
+const majorWork04 = { url: "/assets/works/work-04.png" };
+const majorWork05 = { url: "/assets/works/work-05.jpeg" };
+const majorWork06 = { url: "/assets/works/work-06.png" };
+const majorWork07 = { url: "/assets/works/work-07.png" };
+const majorWork08 = { url: "/assets/works/work-02.png" };
+const majorWork09 = { url: "/assets/works/work-03.png" };
+const majorWork10 = { url: "/assets/works/work-04.png" };
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Signshow — Advertising & Printing Agency" },
-      { name: "description", content: "Large-scale printing, fabricated signage, and vehicle wraps. We materialize big ideas with precision ink and raw steel." },
-      { property: "og:title", content: "Signshow — Advertising & Printing Agency" },
-      { property: "og:description", content: "Large-scale printing, fabricated signage, and vehicle wraps." },
+      { title: "Signshow Advertising — Define Your Brand" },
+      {
+        name: "description",
+        content:
+          "Signshow Advertising defines brands through strategy, content, design and culture.",
+      },
+      {
+        property: "og:title",
+        content: "Signshow Advertising — Define Your Brand",
+      },
+      {
+        property: "og:description",
+        content:
+          "Strategy, content and culture for brands ready to make noise.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Index,
 });
 
-function useCountUp(target: number, duration = 2000) {
-  const [value, setValue] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
+const serviceIcons = [
+  Shapes,
+  Gauge,
+  Megaphone,
+  Fingerprint,
+  Users,
+  Clapperboard,
+  Code2,
+];
+
+const services = [
+  "Acrylic Standees",
+  "Air Balloon",
+  "Banner Print",
+  "Business Card",
+  "Button Badge",
+  "Canvas Print",
+  "Digital Seal",
+  "Hoarding Print",
+  "ID Card Set",
+  "Inauguration Ribbon",
+  "Keychain",
+  "Laser Print",
+  "LED Slim Board",
+  "Light Board",
+  "Memento",
+  "Menu Card",
+  "Mouse Pad",
+  "Mug Printing",
+  "Name Badge",
+  "Photo Frame",
+  "Promotion Table",
+  "Roll Up Standee",
+  "Sticker Print",
+  "Umbrella",
+  "UV DTF Sticker",
+].map((title, index) => ({
+  title,
+  icon: serviceIcons[index % serviceIcons.length] ?? Shapes,
+}));
+
+const projectImages = [
+  majorWork01.url,
+  majorWork02.url,
+  majorWork03.url,
+  majorWork04.url,
+  majorWork05.url,
+  majorWork06.url,
+  majorWork07.url,
+  majorWork08.url,
+  majorWork09.url,
+  majorWork10.url,
+];
+
+const team = Array.from({ length: 20 }, (_, index) => ({
+  image: `/assets/team/team-${String(index + 1).padStart(2, "0")}.png`,
+}));
+
+const heroSlides = projectImages;
+
+const clientLogos = [
+  { src: dialogueLogo.url, alt: "Dialogue Digital Gallery" },
+  { src: talenmarkLogo.url, alt: "Talenmark Developers" },
+  { src: copperKitchenLogo.url, alt: "Copper Kitchen" },
+  { src: diyaLogo.url, alt: "Diya Gold and Diamonds" },
+  { src: licLogo.url, alt: "Life Insurance Corporation of India" },
+  { src: pittappillilLogo.url, alt: "Pittappillil Agencies" },
+  { src: myGLogo.url, alt: "myG" },
+  { src: nestoLogo.url, alt: "Nesto" },
+  { src: rivershoreLogo.url, alt: "Rivershore Hospital" },
+];
+
+function Index() {
+  const [menu, setMenu] = useState(false);
+  const [solidNav, setSolidNav] = useState(false);
+  const [hoveredWork, setHoveredWork] = useState<number | null>(null);
+
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let raf = 0;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting && !started.current) {
-          started.current = true;
-          setValue(0);
-          const start = performance.now();
-          const step = (now: number) => {
-            const p = Math.min((now - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            setValue(Math.floor(eased * target));
-            if (p < 1) raf = requestAnimationFrame(step);
-          };
-          raf = requestAnimationFrame(step);
-        } else if (!e.isIntersecting) {
-          started.current = false;
-          cancelAnimationFrame(raf);
-          setValue(0);
-        }
+    let frame = 0;
+
+    const onScroll = () => {
+      if (frame) return;
+
+      frame = window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const scrollRange = Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          1,
+        );
+
+        document.documentElement.style.setProperty(
+          "--page-progress",
+          String(Math.min(scrollY / scrollRange, 1)),
+        );
+
+        document.documentElement.style.setProperty(
+          "--hero-lift",
+          `${Math.min(scrollY * 0.12, 72)}px`,
+        );
+
+        document.documentElement.style.setProperty(
+          "--hero-strip-shift",
+          `${Math.min(scrollY * 0.035, 24)}px`,
+        );
+
+        setSolidNav(scrollY > 40);
+        frame = 0;
       });
-    }, { threshold: 0.3 });
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(raf);
     };
-  }, [target, duration]);
-  return { value, ref };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    if (reducedMotion.matches) return;
+
+    document.documentElement.classList.add("reveal-ready");
+
+    const revealItems = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".scroll-reveal, .scroll-reveal-item",
+      ),
+    );
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle(
+            "is-visible",
+            entry.isIntersecting,
+          );
+        });
+      },
+      { rootMargin: "0px 0px -10%", threshold: 0 },
+    );
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+
+    return () => {
+      revealObserver.disconnect();
+      document.documentElement.classList.remove("reveal-ready");
+    };
+  }, []);
+
+  return (
+    <main className="overflow-x-clip bg-background text-foreground">
+      {/* Header */}
+      <header
+        className={`fixed inset-x-0 top-0 z-40 border-b transition-all duration-300 ${
+          solidNav
+            ? "border-border bg-background/95 backdrop-blur"
+            : "border-transparent bg-transparent"
+        }`}
+      >
+        <div className="scroll-progress" aria-hidden="true" />
+
+        <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 md:px-10">
+          <a href="#top">
+            <img
+              src={logoAsset.url}
+              alt="Signshow Advertising"
+              width={1024}
+              height={286}
+              className="h-10 w-auto"
+            />
+          </a>
+
+          <nav className="hidden items-center gap-7 text-xs font-bold uppercase md:flex">
+            {["Services", "Works", "Contact", "About"].map((x) => (
+              <a
+                key={x}
+                href={`#${x.toLowerCase()}`}
+                className="transition-colors hover:text-primary"
+              >
+                {x}
+              </a>
+            ))}
+          </nav>
+
+          <div className="hidden items-center gap-3 md:flex">
+            <a
+              href="https://www.instagram.com/signshowadvertising?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw=="
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className={buttonVariants({
+                variant: "ghost",
+                size: "icon",
+              })}
+            >
+              <Instagram />
+            </a>
+
+            <a href="#contact" className={buttonVariants({ size: "lg" })}>
+              Get started <ArrowUpRight />
+            </a>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMenu(true)}
+            aria-label="Open menu"
+          >
+            <Menu />
+          </Button>
+        </div>
+      </header>
+
+      {/* Mobile Menu */}
+      {menu && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-primary p-6 text-primary-foreground">
+          <div className="flex items-center justify-between">
+            <img
+              src={logoAsset.url}
+              alt="Signshow Advertising"
+              width={1024}
+              height={286}
+              className="h-10 w-auto"
+            />
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMenu(false)}
+              aria-label="Close menu"
+            >
+              <X />
+            </Button>
+          </div>
+
+          <nav className="my-auto flex flex-col font-display text-[13vw] font-black uppercase leading-[.9]">
+            {["Services", "Works", "Contact", "About"].map((x) => (
+              <a
+                key={x}
+                href={`#${x.toLowerCase()}`}
+                onClick={() => setMenu(false)}
+              >
+                {x}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
+
+      {/* Hero Section — large hero image removed */}
+      <section
+        id="top"
+        className="relative min-h-[94vh] border-b border-border pt-28"
+      >
+        <div className="mx-auto max-w-[1600px] px-5 md:px-10">
+          <div className="hero-scroll-title flex min-h-[38vh] items-center justify-center py-4 md:min-h-[46vh]">
+            <h1 className="sr-only">
+              Signshow Advertising — Defining Your Brand
+            </h1>
+
+            <img
+              src={mobileTaglineAsset.url}
+              alt="Begin with advertising — signshowadvertising.com"
+              className="hero-title-in w-full object-contain md:hidden"
+            />
+
+            <img
+              src={taglineAsset.url}
+              alt="Begin with advertising — signshowadvertising.com"
+              className="hero-title-in hidden w-full max-w-6xl object-contain md:block"
+            />
+          </div>
+        </div>
+
+        {/* Scrolling Project Image Strip */}
+        <div className="hero-scroll-strip mt-10 rotate-[-1.5deg] border-y-4 border-background bg-foreground py-3 text-background">
+          <div className="marquee-track flex w-max gap-3">
+            {[...heroSlides, ...heroSlides].map((image, index) => (
+              <div
+                key={`${image}-${index}`}
+                className="h-32 w-52 shrink-0 overflow-hidden"
+              >
+                <img
+                  src={image}
+                  alt=""
+                  loading={index < 6 ? "eager" : "lazy"}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Visit Work Button */}
+        <div className="flex justify-center px-5 py-8">
+          <a
+            href="https://catlo.ai/org/signshow-advertising-mmx5o1o2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex size-36 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors duration-300 hover:border-primary hover:bg-primary hover:text-primary-foreground md:size-40"
+          >
+            <span className="text-left font-display text-xl font-medium leading-tight md:text-2xl">
+              Visit Our
+              <br />
+              Work{" "}
+              <ArrowUpRight className="inline size-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 md:size-6" />
+            </span>
+          </a>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section
+        id="services"
+        className="scroll-reveal border-y border-border bg-background px-5 py-24 md:px-10 md:py-36"
+      >
+        <div className="mx-auto grid max-w-[1600px] gap-16 lg:grid-cols-[.72fr_1.28fr] lg:gap-24">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <p className="text-xs font-bold uppercase text-muted-foreground">
+              Services
+            </p>
+
+            <h2 className="mt-7 max-w-xl font-display text-4xl font-medium leading-[.95] md:text-6xl lg:text-7xl">
+              What We
+              <br />
+              Do
+            </h2>
+
+            <p className="mt-8 max-w-md text-base leading-7 text-muted-foreground md:mt-10 md:text-lg md:leading-8">
+              Printing, display, signage, and custom promotional products
+              created to help your brand stand out.
+            </p>
+          </div>
+
+          <div className="border-t border-border">
+            {services.map(({ title, icon: Icon }, index) => (
+              <article
+                key={title}
+                className="scroll-reveal-item group grid gap-6 border-b border-border py-10 sm:grid-cols-[88px_1fr] md:py-14"
+                style={{
+                  transitionDelay: `${Math.min(index, 4) * 55}ms`,
+                }}
+              >
+                <div className="flex size-20 items-center justify-center rounded-[24px] border-2 border-primary bg-background text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="size-8" strokeWidth={1.5} />
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold text-primary">
+                    {String(index + 1).padStart(2, "0")}/
+                  </p>
+
+                  <h3 className="mt-2 font-display text-2xl font-medium md:text-4xl">
+                    {title}
+                  </h3>
+
+                  <a
+                    href="#contact"
+                    className="mt-7 inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-primary"
+                  >
+                    Contact <ArrowUpRight className="size-4" />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics Section */}
+      <section className="scroll-reveal mx-auto max-w-[1600px] px-5 py-24 md:px-10 md:py-36">
+        <SectionHead title="Proof, not promises" />
+
+        <div className="mt-16 grid border-l border-t border-border sm:grid-cols-3">
+          {[
+            [10, "K+", "Happy clients"],
+            [25, "K+", "Projects delivered"],
+            [20, " Yrs", "In production"],
+          ].map(([value, suffix, label], index) => (
+            <div
+              key={label}
+              className="scroll-reveal-item border-b border-r border-border p-7 md:p-10"
+              style={{ transitionDelay: `${index * 90}ms` }}
+            >
+              <strong className="font-display text-5xl font-black text-primary md:text-7xl">
+                <CountUp
+                  value={Number(value)}
+                  suffix={String(suffix)}
+                />
+              </strong>
+
+              <p className="mt-4 text-xs font-bold uppercase md:mt-5 md:text-sm">
+                {label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Projects Section */}
+      <section
+        id="works"
+        className="bg-team-stage py-24 text-team-stage-foreground md:py-32"
+      >
+        <div className="mx-auto grid max-w-[1600px] gap-14 px-5 md:grid-cols-[.72fr_1.28fr] md:px-10">
+          <div className="flex flex-col justify-center">
+            <h2 className="scroll-reveal font-display text-[16vw] font-black uppercase leading-[.86] sm:text-[14vw] md:text-[8vw]">
+              Our
+              <br />
+              <span className="text-primary">Projects</span>
+            </h2>
+          </div>
+
+          <div
+            className="works-stage relative grid grid-cols-2 gap-4 overflow-hidden p-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5"
+            onMouseLeave={() => setHoveredWork(null)}
+          >
+            {team.map((member, index) => (
+              <div
+                key={`${member.image}-${index}`}
+                className="scroll-reveal-item aspect-[3/4]"
+                style={{
+                  transitionDelay: `${(index % 5) * 55}ms`,
+                }}
+              >
+                <article
+                  className={`team-card group relative h-full w-full overflow-hidden rounded-[1.5rem] border border-primary bg-card ${
+                    index % 2 === 0 ? "-rotate-3" : "rotate-3"
+                  }`}
+                  style={{ animationDelay: `${index * -0.7}s` }}
+                  onMouseEnter={() => setHoveredWork(index)}
+                >
+                  <img
+                    src={member.image}
+                    alt={`Signshow major work ${index + 1}`}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                </article>
+              </div>
+            ))}
+
+            {hoveredWork !== null && team[hoveredWork] && (
+              <div
+                className="work-preview pointer-events-none fixed inset-0 z-50 hidden items-center justify-center md:flex"
+                aria-hidden="true"
+              >
+                <div className="work-preview-frame overflow-hidden rounded-[1.5rem] border border-primary bg-card">
+                  <img
+                    src={team[hoveredWork].image}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section
+        id="about"
+        className="scroll-reveal border-b border-border bg-background px-5 py-24 md:px-10 md:py-36"
+      >
+        <div className="mx-auto grid max-w-[1600px] gap-16 lg:grid-cols-[.72fr_1.28fr] lg:gap-24">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <p className="text-xs font-bold uppercase text-muted-foreground">
+              Since 2007
+            </p>
+
+            <h2 className="mt-7 max-w-xl font-display text-4xl font-medium leading-[.95] md:text-6xl lg:text-7xl">
+              About
+              <br />
+              Signshow
+            </h2>
+
+            <p className="mt-8 max-w-md text-base leading-7 text-muted-foreground md:mt-10 md:text-lg md:leading-8">
+              Premium printing solutions built on quality, reliability,
+              and customer satisfaction.
+            </p>
+          </div>
+
+          <div className="border-t border-border">
+            <article className="scroll-reveal-item border-b border-border py-10 md:py-14">
+              <p className="text-xs font-bold uppercase text-primary">
+                Our Story
+              </p>
+
+              <h3 className="mt-5 font-display text-2xl font-medium md:text-4xl">
+                Nearly 20 years of trusted printing
+              </h3>
+
+              <p className="mt-5 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
+                Since 2007, Signshow Advertising has been delivering
+                premium printing solutions with a commitment to quality,
+                reliability, and customer satisfaction. Backed by nearly
+                20 years of experience, we have proudly served{" "}
+                <strong className="font-bold text-foreground">
+                  2,00,000+ customers
+                </strong>{" "}
+                and successfully completed{" "}
+                <strong className="font-bold text-foreground">
+                  3,50,000+ printing projects
+                </strong>
+                , earning the trust of businesses, institutions, and
+                individuals alike.
+              </p>
+            </article>
+
+            <article className="scroll-reveal-item border-b border-border py-10 md:py-14">
+              <p className="text-xs font-bold uppercase text-primary">
+                What We Deliver
+              </p>
+
+              <h3 className="mt-5 font-display text-2xl font-medium md:text-4xl">
+                Defining Your Brand
+              </h3>
+
+              <p className="mt-5 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
+                Guided by our tagline,{" "}
+                <strong className="font-bold text-primary">
+                  “Defining Your Brand,”
+                </strong>{" "}
+                we specialize in providing high-quality printing services
+                with a seamless doorstep experience. From business
+                essentials to large-format prints and customized print
+                solutions, we combine advanced technology, skilled
+                craftsmanship, and timely delivery to help every customer
+                make a lasting impression.
+              </p>
+            </article>
+
+            <article className="scroll-reveal-item border-b border-border py-10 md:py-14">
+              <p className="text-xs font-bold uppercase text-primary">
+                Our Vision
+              </p>
+
+              <p className="mt-5 max-w-3xl font-display text-xl font-medium leading-tight text-foreground md:text-3xl">
+                Our vision is to become the world&apos;s most trusted name
+                in printing by consistently delivering excellence in
+                every project we undertake.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* Client Logos */}
+      <section className="scroll-reveal border-y border-border py-12 md:py-16">
+        <p className="mb-8 text-center text-[10px] font-bold uppercase text-muted-foreground md:mb-10 md:text-xs">
+          Trusted by teams at
+        </p>
+
+        <div className="marquee-track flex w-max items-center gap-8 md:gap-16">
+          {[...clientLogos, ...clientLogos].map((logo, index) => (
+            <div
+              key={`${logo.alt}-${index}`}
+              className="flex h-16 w-32 shrink-0 items-center justify-center md:h-24 md:w-48"
+            >
+              <img
+                src={logo.src}
+                alt={index < clientLogos.length ? logo.alt : ""}
+                loading="lazy"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section
+        id="contact"
+        className="scroll-reveal bg-primary px-5 py-24 text-center text-primary-foreground md:px-10 md:py-36"
+      >
+        <p className="text-[10px] font-bold uppercase md:text-xs">
+          Have a project? Don’t be shy.
+        </p>
+
+        <h2 className="mx-auto mt-8 max-w-6xl font-display text-[14vw] font-black uppercase leading-[.82] md:text-[10vw]">
+          Let’s work together
+        </h2>
+
+        <a
+          href="https://wa.me/919562900720"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonVariants({
+            variant: "secondary",
+            size: "lg",
+            className: "mt-12",
+          })}
+        >
+          Start a project <ArrowUpRight />
+        </a>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-5 py-12 md:px-10">
+        <div className="mx-auto max-w-[1600px]">
+          <div className="flex flex-wrap gap-2">
+            {[
+              {
+                label: "Instagram",
+                href: "https://www.instagram.com/signshowadvertising?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==",
+              },
+              {
+                label: "WhatsApp",
+                href: "https://wa.me/919562900720",
+              },
+              {
+                label: "signshowtsy@gmail.com",
+                href: "mailto:signshowtsy@gmail.com",
+              },
+            ].map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-border px-4 py-2 text-xs font-bold uppercase transition-colors hover:border-primary hover:text-primary"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+
+          <div className="mt-16 flex flex-col justify-between gap-5 border-t border-border pt-8 md:flex-row">
+            <img
+              src={logoAsset.url}
+              alt="Signshow Advertising"
+              width={1024}
+              height={286}
+              loading="lazy"
+              className="h-12 w-auto object-contain object-left"
+            />
+
+            <span className="text-xs uppercase text-muted-foreground">
+              © 2026 Signshow Advertising. Define your brand.
+            </span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
 }
 
-function Counter({ target, suffix = "", label }: { target: number; suffix?: string; label: string }) {
-  const { value, ref } = useCountUp(target);
-  const pct = Math.min((value / target) * 100, 100);
+function SectionHead({ title }: { title: string }) {
   return (
-    <div ref={ref} className="flex flex-col items-center gap-2 text-center">
-      <div className="flex items-baseline gap-1">
-        <span className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-signal-deep tabular-nums">{value}</span>
-        <span className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-signal-deep">{suffix}</span>
-      </div>
-      <div className="h-1 w-full bg-zinc-200 overflow-hidden rounded-full">
-        <div className="h-full bg-signal transition-[width] duration-100 ease-out" style={{ width: `${pct}%` }} />
-      </div>
-      <span className="font-display text-xs md:text-sm font-medium text-zinc-500 uppercase tracking-widest">{label}</span>
+    <div>
+      <h2 className="font-display text-4xl font-black uppercase leading-none md:text-8xl">
+        {title}
+      </h2>
     </div>
   );
 }
 
-function Index() {
-  function PortraitCarousel({ direction, images }: { direction?: "left" | "right"; images: { src: string; title: string }[] }) {
-    const [api, setApi] = useState<CarouselApi>(undefined);
-    useEffect(() => {
-      if (!api) return;
-      const interval = setInterval(() => {
-        if (direction === "left") {
-          api.scrollPrev();
-        } else {
-          api.scrollNext();
+function CountUp({
+  value,
+  suffix,
+}: {
+  value: number;
+  suffix: string;
+}) {
+  const [count, setCount] = useState(0);
+  const elementRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    let frame = 0;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          cancelAnimationFrame(frame);
+
+          if (
+            !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ) {
+            setCount(0);
+          }
+
+          return;
         }
-      }, 2000);
-      return () => clearInterval(interval);
-    }, [api, direction]);
-    return (
-      <section className="py-8 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <Carousel opts={{ loop: true, align: "start" }} setApi={setApi} className="px-8">
-            <CarouselContent>
-              {images.map((p) => (
-                <CarouselItem key={p.title} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
-                  <div className="overflow-hidden rounded-md">
-                    <img
-                      src={p.src}
-                      alt={p.title}
-                      loading="lazy"
-                      className="w-full aspect-[2/3] object-cover"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0" />
-            <CarouselNext className="right-0" />
-          </Carousel>
-        </div>
-      </section>
+
+        if (
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          setCount(value);
+          return;
+        }
+
+        cancelAnimationFrame(frame);
+        setCount(0);
+
+        const startedAt = performance.now();
+
+        const animate = (time: number) => {
+          const progress = Math.min((time - startedAt) / 1400, 1);
+
+          setCount(
+            Math.round(value * (1 - Math.pow(1 - progress, 3))),
+          );
+
+          if (progress < 1) {
+            frame = requestAnimationFrame(animate);
+          }
+        };
+
+        frame = requestAnimationFrame(animate);
+      },
+      { rootMargin: "0px 0px -10%", threshold: 0 },
     );
-  }
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [value]);
+
   return (
-    <div className="bg-white text-zinc-900 font-body selection:bg-signal selection:text-ink min-h-screen">
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="#" className="flex items-center transition-transform hover:scale-105">
-            <img src={websiteImages.logo} alt="Signshow" className="h-8 w-auto" />
-          </a>
-          <div className="hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest text-zinc-900">
-            <a href="#" className="hover:text-signal transition-colors">Home</a>
-            <a href="https://catlo.ai/org/signshow-advertising-mmx5o1o2" target="_blank" rel="noopener noreferrer" className="hover:text-signal transition-colors">Catalog</a>
-            <a href="#work" className="hover:text-signal transition-colors">Work</a>
-            <a href="#services" className="hover:text-signal transition-colors">Services</a>
-            <a href="#contact" className="hover:text-signal transition-colors">Contact</a>
-          </div>
-        </div>
-      </nav>
-
-      <section className="relative pt-16 bg-white overflow-hidden animate-fade-in">
-        <div className="relative">
-          <img
-            src={websiteImages.heroBanner}
-            alt="Signshow — Defining your Brand"
-            className="w-full h-auto block"
-          />
-          <img
-            src={websiteImages.logo3d}
-            alt="Signshow 3D Logo"
-            className="absolute top-1/2 left-[73%] -translate-x-1/2 -translate-y-1/2 w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-[28rem] lg:h-[28rem] object-contain drop-shadow-2xl"
-            style={{ animation: "float-up-down 3s ease-in-out infinite" }}
-          />
-          <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center px-6">
-            <a
-              href="https://catlo.ai/org/signshow-advertising-mmx5o1o2"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center bg-white text-ink py-2 px-4 sm:py-3 sm:pr-5 sm:pl-4 ring-1 ring-white font-medium text-xs sm:text-sm rounded-sm hover:bg-ink hover:text-white hover:ring-ink hover:scale-105 transition-all duration-200 uppercase tracking-wider shadow-lg"
-            >
-              <span className="mr-2 shrink-0">
-                <svg className="size-3 sm:size-4" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </span>
-              Visit our work
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <PortraitCarousel direction="left" images={topCarouselImages} />
-
-      <section className="py-20 px-6 bg-zinc-50 border-y border-zinc-200">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap justify-center gap-10">
-            <Counter target={10} suffix="K+" label="Happy Clients" />
-            <Counter target={20} suffix="K+" label="Projects Delivered" />
-            <Counter target={20} suffix="yrs" label="In Production" />
-          </div>
-        </div>
-      </section>
-
-      <PortraitCarousel direction="right" images={bottomCarouselImages} />
-
-      <section id="work" className="py-24 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="font-display text-4xl font-medium mb-16 tracking-tight uppercase text-zinc-900">Our Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {selectedWorkImages.map((w) => (
-              <div key={w.title} className={`space-y-4 group ${w.offset}`}>
-                <div className="overflow-hidden rounded-[min(1vw,12px)]">
-                  <img src={w.src} alt={w.title} width={1024} height={1344} loading="lazy" className="w-full aspect-[3/4] object-cover transition-transform duration-700 group-hover:scale-105" />
-                </div>
-                <div className="flex justify-center items-start">
-                  <h3 className="font-medium text-lg text-zinc-900 text-center">
-                    {w.title}
-                  </h3>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="services" className="py-24 px-6 bg-zinc-50 border-y border-zinc-200">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="font-display text-4xl font-medium mb-16 tracking-tight uppercase text-zinc-900">Services</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-zinc-200">
-            {[
-              { n: "01/", t: "Acrylic Standees" },
-              { n: "02/", t: "Air Balloon" },
-              { n: "03/", t: "Banner Print" },
-              { n: "04/", t: "Business Card" },
-              { n: "05/", t: "Button Badge" },
-              { n: "06/", t: "Canvas Print" },
-              { n: "07/", t: "Digital Seal" },
-              { n: "08/", t: "Hoarding Print" },
-              { n: "09/", t: "ID Card Set" },
-              { n: "10/", t: "Inauguration Ribbon" },
-              { n: "11/", t: "Keychain" },
-              { n: "12/", t: "Laser Print" },
-              { n: "13/", t: "LED Slim Board" },
-              { n: "14/", t: "Light Board" },
-              { n: "15/", t: "Memento" },
-              { n: "16/", t: "Menu Card" },
-              { n: "17/", t: "Mouse Pad" },
-              { n: "18/", t: "Mug Printing" },
-              { n: "19/", t: "Name Badge" },
-              { n: "20/", t: "Photo Frame" },
-              { n: "21/", t: "Promotion Table" },
-              { n: "22/", t: "Roll Up Standee" },
-              { n: "23/", t: "Sticker Print" },
-              { n: "24/", t: "Umbrella" },
-              { n: "25/", t: "UV DTF Sticker" },
-            ].map((s, i) => (
-              <div key={s.n} className="bg-white p-6 hover:bg-zinc-50 transition-colors duration-300 group flex flex-col justify-between">
-                <div>
-                  <span className="text-signal-deep font-mono text-xs mb-3 block">{s.n}</span>
-                  <h4 className="font-display text-lg font-medium uppercase text-zinc-900 group-hover:text-signal-deep transition-colors">{s.t}</h4>
-                </div>
-                <a
-                  href={`https://wa.me/919946100720?text=${encodeURIComponent(`Hi Signshow, I'd like to enquire about your ${s.t} service. Please share details and pricing.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-signal-deep border border-signal/60 px-3 py-2 rounded-sm hover:bg-signal hover:text-ink transition-colors mt-4 self-start"
-                >
-                  Contact
-                  <svg className="size-3" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="py-24 px-6 bg-white border-t border-zinc-200">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-4xl md:text-5xl font-medium mb-10 tracking-tight uppercase text-zinc-900">
-            About <span className="text-signal-deep font-bold">Signshow</span> Advertising
-          </h2>
-          <div className="space-y-6 text-lg text-zinc-700 leading-relaxed">
-            <p>
-              Since 2007, Signshow Advertising has been delivering premium printing solutions with a commitment to quality, reliability, and customer satisfaction. Backed by nearly 20 years of experience, we have proudly served <span className="font-semibold text-zinc-900">2,00,000+ customers</span> and successfully completed <span className="font-semibold text-zinc-900">3,50,000+ printing projects</span>, earning the trust of businesses, institutions, and individuals alike.
-            </p>
-            <p>
-              Guided by our tagline, <span className="italic text-signal-deep">"Defining Your Brand,"</span> we specialize in providing high-quality printing services with a seamless doorstep experience. From business essentials to large-format prints and customized print solutions, we combine advanced technology, skilled craftsmanship, and timely delivery to help every customer make a lasting impression.
-            </p>
-            <p>
-              Our vision is to become the world's most trusted name in printing by consistently delivering excellence in every project we undertake.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="py-32 px-6 bg-white">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          <h2 className="font-display text-5xl md:text-7xl font-semibold tracking-tighter uppercase mb-8 text-zinc-900">
-            CONNECT US
-          </h2>
-          <p className="max-w-[48ch] text-zinc-600 text-lg mb-12 text-pretty">
-            We specialize in the impossible. From one-off installations to global rollouts, our shop is ready for your specific fabrication needs.
-          </p>
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="flex flex-col items-center p-6 border border-zinc-200 rounded-sm hover:border-signal hover:-translate-y-1 transition-all duration-300">
-              <span className="text-xs font-mono text-zinc-500 mb-2 uppercase">Direct Line</span>
-              <a href="tel:+919946100720" className="text-xl font-medium text-zinc-900">9946100720 | 9562900720</a>
-            </div>
-            <div className="flex flex-col items-center p-6 border border-zinc-200 rounded-sm hover:border-signal hover:-translate-y-1 transition-all duration-300">
-              <span className="text-xs font-mono text-zinc-500 mb-2 uppercase">Inquiries</span>
-              <a href="mailto:signshowtsy@gmail.com" className="text-xl font-medium text-zinc-900">signshowtsy@gmail.com</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="py-12 px-6 border-t border-zinc-200 bg-zinc-50">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3">
-            <img src={websiteImages.logo} alt="Signshow" className="h-6 w-auto" />
-            <div className="size-2 rounded-full bg-signal animate-pulse"></div>
-            <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">Press active</span>
-          </div>
-          <div className="text-[10px] text-zinc-500 uppercase tracking-widest">
-            © {new Date().getFullYear()} Signshow Fabrications. All physical rights reserved.
-          </div>
-        </div>
-      </footer>
-    </div>
+    <span ref={elementRef}>
+      {count}
+      {suffix}
+    </span>
   );
 }
